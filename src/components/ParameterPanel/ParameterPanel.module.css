@@ -1,0 +1,160 @@
+.panel {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.header h2 {
+  margin: 0 0 var(--space-1);
+  font-size: 17px;
+}
+
+.header p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.header button {
+  height: 34px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.group {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.group legend,
+.field span {
+  margin-bottom: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.optionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.option,
+.activeOption {
+  display: grid;
+  min-height: 70px;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-align: left;
+}
+
+.option span,
+.activeOption span {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.activeOption {
+  border-color: var(--color-accent);
+  background: rgba(15, 139, 141, 0.08);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.field select {
+  height: 40px;
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 0 var(--space-3);
+}
+
+.field select:focus {
+  border-color: var(--color-accent);
+  outline: 3px solid rgba(15, 139, 141, 0.14);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.segment,
+.activeSegment {
+  min-height: 38px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.activeSegment {
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
+  background: rgba(15, 139, 141, 0.08);
+  font-weight: 700;
+}
+
+.paletteList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.palette,
+.activePalette {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.palette span,
+.activePalette span {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.activePalette {
+  border-color: var(--color-accent);
+  font-weight: 700;
+}
+
+@media (max-width: 420px) {
+  .optionGrid,
+  .row,
+  .paletteList {
+    grid-template-columns: 1fr;
+  }
+}

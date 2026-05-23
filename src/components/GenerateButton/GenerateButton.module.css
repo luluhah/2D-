@@ -1,0 +1,47 @@
+.wrapper {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  width: 100%;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: white;
+  background: var(--color-accent);
+  font-weight: 800;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--color-accent-strong);
+}
+
+.button:disabled {
+  opacity: 0.65;
+}
+
+.progress {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-warm);
+  transition: width 180ms ease;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: 13px;
+}

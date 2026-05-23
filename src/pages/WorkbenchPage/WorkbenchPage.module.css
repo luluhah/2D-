@@ -1,0 +1,139 @@
+.page {
+  min-height: 100vh;
+  padding: var(--space-5);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr) minmax(260px, 340px);
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.panel,
+.results {
+  min-height: 540px;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+}
+
+.panel {
+  display: grid;
+  align-content: start;
+  gap: var(--space-5);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border);
+}
+
+.panel h2,
+.results h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.panel p {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.sectionHeader span {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.resultActions button {
+  min-height: 34px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  background: var(--color-surface);
+  font-weight: 700;
+}
+
+.resultActions button:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.resultActions button:last-child {
+  border-color: var(--color-accent);
+  color: white;
+  background: var(--color-accent);
+}
+
+.resultActions button:disabled {
+  opacity: 0.5;
+}
+
+.exportMessage {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid rgba(15, 139, 141, 0.2);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent-strong);
+  background: rgba(15, 139, 141, 0.08);
+  font-size: 13px;
+}
+
+@media (max-width: 1080px) {
+  .workspace {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+
+  .workspace > :last-child {
+    grid-column: 1 / -1;
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: var(--space-4);
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+  }
+
+  .resultActions {
+    justify-content: stretch;
+  }
+
+  .resultActions button {
+    flex: 1 1 120px;
+  }
+
+  .panel,
+  .results {
+    min-height: auto;
+  }
+}
