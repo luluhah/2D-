@@ -1,73 +1,117 @@
 import type { Asset, GenerateParams, ProjectSettings } from "../types/asset";
 
-const STORAGE_KEYS = {
-  assets: "game-asset-forge.assets",
-  params: "game-asset-forge.params",
-  projectSettings: "game-asset-forge.project-settings",
+const databaseName = "game-asset-forge";
+const databaseVersion = 1;
+const storeName = "settings";
+
+const keys = {
+  assets: "assets",
+  params: "params",
+  projectSettings: "project-settings",
 };
 
-function readJson<TValue>(key: string, fallback: TValue): TValue {
+function openDatabase() {
+  return new Promise<IDBDatabase>((resolve, reject) => {
+    const request = indexedDB.open(databaseName, databaseVersion);
+
+    request.onupgradeneeded = () => {
+      const database = request.result;
+      if (!database.objectStoreNames.contains(storeName)) {
+        database.createObjectStore(storeName);
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function readValue<TValue>(key: string, fallback: TValue): Promise<TValue> {
   try {
-    const value = localStorage.getItem(key);
-    return value ? (JSON.parse(value) as TValue) : fallback;
+    const database = await openDatabase();
+    return await new Promise<TValue>((resolve, reject) => {
+      const transaction = database.transaction(storeName, "readonly");
+      const store = transaction.objectStore(storeName);
+      const request = store.get(key);
+
+      request.onsuccess = () => resolve((request.result as TValue | undefined) ?? fallback);
+      request.onerror = () => reject(request.error);
+      transaction.oncomplete = () => database.close();
+      transaction.onerror = () => database.close();
+    });
   } catch {
     return fallback;
   }
 }
 
-function writeJson<TValue>(key: string, value: TValue) {
+async function writeValue<TValue>(key: string, value: TValue): Promise<void> {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "QuotaExceededError") {
-      console.warn(`localStorage quota exceeded for ${key}`);
-      return;
-    }
+    const database = await openDatabase();
+    await new Promise<void>((resolve, reject) => {
+      const transaction = database.transaction(storeName, "readwrite");
+      const store = transaction.objectStore(storeName);
+      const request = store.put(value, key);
 
-    throw error;
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+      transaction.oncomplete = () => database.close();
+      transaction.onerror = () => database.close();
+    });
+  } catch (error) {
+    console.warn(`IndexedDB write failed for ${key}`, error);
   }
 }
 
-function toPersistableAsset(asset: Asset): Asset | undefined {
-  if (asset.imageUrl.startsWith("data:")) {
-    return undefined;
-  }
+async function deleteValue(key: string): Promise<void> {
+  try {
+    const database = await openDatabase();
+    await new Promise<void>((resolve, reject) => {
+      const transaction = database.transaction(storeName, "readwrite");
+      const store = transaction.objectStore(storeName);
+      const request = store.delete(key);
 
-  return asset;
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+      transaction.oncomplete = () => database.close();
+      transaction.onerror = () => database.close();
+    });
+  } catch (error) {
+    console.warn(`IndexedDB delete failed for ${key}`, error);
+  }
 }
 
 export const storageService = {
-  loadAssets() {
-    return readJson<Asset[]>(STORAGE_KEYS.assets, []).filter(
-      (asset) => !asset.imageUrl.startsWith("data:"),
-    );
+  async loadAssets() {
+    return readValue<Asset[]>(keys.assets, []);
   },
 
-  saveAssets(assets: Asset[]) {
-    const persistableAssets = assets.flatMap((asset) => {
-      const persistableAsset = toPersistableAsset(asset);
-      return persistableAsset ? [persistableAsset] : [];
-    });
-    writeJson(STORAGE_KEYS.assets, persistableAssets.slice(0, 30));
+  async saveAssets(assets: Asset[]) {
+    await writeValue(keys.assets, assets.slice(0, 100));
   },
 
-  loadParams(fallback: GenerateParams) {
-    return readJson<GenerateParams>(STORAGE_KEYS.params, fallback);
+  async loadParams(fallback: GenerateParams) {
+    return readValue<GenerateParams>(keys.params, fallback);
   },
 
-  saveParams(params: GenerateParams) {
-    writeJson(STORAGE_KEYS.params, params);
+  async saveParams(params: GenerateParams) {
+    await writeValue(keys.params, params);
   },
 
-  loadProjectSettings(fallback: ProjectSettings) {
-    return readJson<ProjectSettings>(STORAGE_KEYS.projectSettings, fallback);
+  async loadProjectSettings(fallback: ProjectSettings) {
+    return readValue<ProjectSettings>(keys.projectSettings, fallback);
   },
 
-  saveProjectSettings(settings: ProjectSettings) {
-    writeJson(STORAGE_KEYS.projectSettings, settings);
+  async saveProjectSettings(settings: ProjectSettings) {
+    await writeValue(keys.projectSettings, settings);
   },
 
-  clearAssets() {
-    localStorage.removeItem(STORAGE_KEYS.assets);
+  async clearAssets() {
+    await deleteValue(keys.assets);
+  },
+
+  async clearLegacyLocalStorage() {
+    localStorage.removeItem("game-asset-forge.assets");
+    localStorage.removeItem("game-asset-forge.params");
+    localStorage.removeItem("game-asset-forge.project-settings");
   },
 };

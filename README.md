@@ -13,7 +13,7 @@
 - Vite
 - CSS Modules
 - lucide-react
-- localStorage
+- IndexedDB
 - Canvas / Blob API
 
 ## 本地运行
@@ -71,11 +71,13 @@ npm run dev -- --host 127.0.0.1
 - 启动 `npm run dev:api` 后应看到 `Server version`、`Aliyun image model`、`Aliyun API key loaded` 三行日志。
 - 如果前端返回 500，请查看 `dev:api` 终端中的 `[aliyun-response]` 日志，里面会显示阿里云接口返回的具体错误。
 - 如果前端端口变成 `5174`，仍然可以使用，因为 Vite 会代理 `/api` 到 `8787`。
-- 真实 API 返回的图片不会写入 localStorage，避免 base64 大图超过浏览器存储上限；刷新后可重新生成或使用 Mock 模式演示持久化。
+- 生成历史、参数和项目设置存储在 IndexedDB 中；启动时会清理旧版本 localStorage 数据。
 
 ## 测试记录
 
 测试报告见：[docs/test-report.md](docs/test-report.md)
+
+提交检查清单见：[docs/submission-checklist.md](docs/submission-checklist.md)
 
 ## 核心功能
 
@@ -95,7 +97,7 @@ npm run dev -- --host 127.0.0.1
 - 批量 PNG 下载
 - Sprite Sheet 导出
 - 素材元信息 JSON 导出
-- localStorage 本地持久化
+- IndexedDB 本地持久化
 - 项目设置：项目名、默认风格、默认尺寸、命名前缀
 - 生成失败后重试
 
@@ -129,9 +131,10 @@ fetch("/api/generate-assets", {
 
 - 以游戏素材生产流程为中心，而不是简单图片生成页。
 - React + TypeScript 拆分清晰，核心类型覆盖生成参数、素材数据和生成状态。
+- 使用 `useReducer` + `useAssetStore` 集中管理工作台状态流，页面组件更专注于渲染。
 - Mock 生成与真实 API 通过统一接口隔离，便于后续扩展。
 - 已提供阿里云百炼 / DashScope 后端代理示例，API Key 不进入前端包。
-- 使用 localStorage 支持无后端历史记录。
+- 使用 IndexedDB 支持无后端历史记录，更适合保存结构化素材数据。
 - 使用 Canvas / Blob API 支持 PNG、Sprite Sheet 和元信息导出。
 - 项目级设置会影响默认参数和素材命名规则，便于维持一组素材的一致性。
 - 工作台式布局适合前端面试展示交互、状态管理和工程组织能力。
